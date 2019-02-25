@@ -34,14 +34,13 @@ object  readKafka extends  App{
 
   val df1 = json_df2.groupBy("key")
     .agg(count("val").as("count"),
-    current_timestamp(),
     sum("val").as("sum"),
    collect_list(col("TIMESTAMP")).as("ts"),
    col("key"),
    collect_list( col("val")).as("vals"),
     mean("val").as("mean")).orderBy("key")
 
-  val query = df1.writeStream
+  val query = df1.toJSON.writeStream
     .outputMode("complete")
     .format("console")
     .start()
