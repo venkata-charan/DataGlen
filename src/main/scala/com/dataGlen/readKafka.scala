@@ -43,7 +43,9 @@ object  readKafka extends  App{
     mean("val").as("mean")).orderBy("key")
 
   val query = df1
-    .select(col("key"),to_json(struct(df1.columns.head,df1.columns.tail:_*)))
+    .select(col("key").as("Key")
+      ,to_json(struct(df1.columns.head,df1.columns.tail:_*)).
+        cast("String").as("Value"))
     .writeStream
     .outputMode("complete")
     .format("console")
