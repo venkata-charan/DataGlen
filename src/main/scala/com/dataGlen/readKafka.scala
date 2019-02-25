@@ -30,7 +30,7 @@ object  readKafka extends  App{
     .load()
     .select(from_json(col("value").cast("string"), schema).as("value"))
 
-  val json_df2 = json_df.selectExpr("value.key","value.val","value.TIMESTAMP")
+  val json_df2 = json_df.selectExpr("value.key","value.val")
 
   val df1 = json_df2.groupBy("key")
     .agg(count("val").as("count"),
