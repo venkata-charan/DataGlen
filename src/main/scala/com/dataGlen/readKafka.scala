@@ -41,7 +41,7 @@ object  readKafka extends  App{
     mean("val").as("mean")).orderBy("key")
 
   val query = df1.writeStream
-    .outputMode("compute")
+    .outputMode("complete")
     .format("console")
     .start()
 
