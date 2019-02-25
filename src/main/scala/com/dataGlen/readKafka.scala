@@ -34,7 +34,7 @@ object  readKafka extends  App{
 
   val df1 = json_df2.groupBy("key")
     .agg(count("val").as("count"),
-    current_timestamp().as("TIMESTAMP"),
+    //current_timestamp().as("TIMESTAMP"),
     sum("val").as("sum"),
    // collect_list(col("TIMESTAMP")).as("ts"),
    // col("key"),
