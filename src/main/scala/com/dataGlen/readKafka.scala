@@ -21,7 +21,7 @@ object  readKafka extends  App{
 
   val query =
     df1.writeStream.format("csv")        // can be "orc", "json", "csv", etc.
-    .option("path", "hdfs:///user/charanrajlv3971/dataglen1")
+    .option("path", "hdfs:/user/charanrajlv3971/dataglen1")
     .start()
 
   query.awaitTermination()
