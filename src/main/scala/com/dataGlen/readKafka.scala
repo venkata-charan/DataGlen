@@ -35,6 +35,7 @@ object  readKafka extends  App{
 
   val df1 = json_df2.groupBy("key")
     .agg(count("val").as("count"),
+      first("TIMESTAMP"),
     sum("val").as("sum"),
    collect_list(col("TIMESTAMP")).as("ts"),
    col("key"),
@@ -42,9 +43,7 @@ object  readKafka extends  App{
     mean("val").as("mean")).orderBy("key")
 
   val query = df1
-    .select("key" ,
-      to_json(struct("count",
-        "sum","ts","key","vals","mean")).toString())
+    .select(col("key"),to_json(struct(df1.columns.head,df1.columns.tail:_*)))
     .writeStream
     .outputMode("complete")
     .format("console")
