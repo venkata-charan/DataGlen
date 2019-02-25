@@ -17,7 +17,7 @@ object  readKafka extends  App{
     .option("startingOffsets", "latest")
     .load() //test
 
-  val df1 = df.select("CAST(key AS STRING) key", "CAST(value AS STRING) value")
+  val df1 = df.select("CAST(key AS STRING)", "CAST(value AS STRING)")
  df1.printSchema()
   df1.show()
   val query = df1.writeStream
