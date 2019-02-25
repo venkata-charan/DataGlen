@@ -18,8 +18,7 @@ object  readKafka extends  App{
     .load() //test
 
   val df1 = df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
- df1.printSchema()
-  df1.show()
+
   val query = df1.writeStream
     .outputMode("append")
     .format("console")
