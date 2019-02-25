@@ -32,12 +32,13 @@ object  readKafka extends  App{
 
   val json_df2 = json_df.selectExpr("value.key","value.val","value.TIMESTAMP")
 
-  val df1 = json_df2.groupBy("key").agg(count("val").as("count"),
+  val df1 = json_df2.groupBy("key")
+    .agg(count("val").as("count"),
     current_timestamp().as("TIMESTAMP"),
     sum("val").as("sum"),
-    collect_list("TIMESTAMP").as("ts"),
-    col("key"),
-    collect_list("val").as("vals"),
+   // collect_list(col("TIMESTAMP")).as("ts"),
+   // col("key"),
+    //collect_list( col("val")).as("vals"),
     mean("val").as("mean")).orderBy("key")
 
   val query = df1.writeStream
