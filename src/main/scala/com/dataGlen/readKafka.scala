@@ -17,11 +17,13 @@ object  readKafka extends  App{
     .option("startingOffsets", "latest")
     .load() //test
 
+  spark.sparkContext.setLogLevel("WARN")
+
   val df1 = df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
 
-  val query =
-    df1.writeStream.format("csv")        // can be "orc", "json", "csv", etc.
-    .option("path", "hdfs:/user/charanrajlv3971/dataglen1")
+  val query = df1.writeStream
+    .outputMode("append")
+    .format("console")
     .start()
 
   query.awaitTermination()
