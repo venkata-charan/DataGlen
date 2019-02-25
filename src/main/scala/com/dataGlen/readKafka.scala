@@ -20,7 +20,7 @@ object  readKafka extends  App{
   val df1 = df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
 
   val query = df1.writeStream
-    .outputMode("Append")
+    .outputMode("append")
     .format("console")
     .start()
 
