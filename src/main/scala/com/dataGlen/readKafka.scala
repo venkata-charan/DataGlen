@@ -19,9 +19,9 @@ object  readKafka extends  App{
 
   val df1 = df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
 
-  val query = df1.writeStream
-    .outputMode("append")
-    .format("console")
+  val query =
+    df1.writeStream.format("csv")        // can be "orc", "json", "csv", etc.
+    .option("path", "hdfs:///user/charanrajlv3971/dataglen1")
     .start()
 
   query.awaitTermination()
