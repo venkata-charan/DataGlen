@@ -1,6 +1,8 @@
 package com.dataGlen
 
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.types.{LongType, StringType, StructField, StructType}
+import org.apache.spark.sql.functions._
 
 object  readKafka extends  App{
 
@@ -9,17 +11,34 @@ object  readKafka extends  App{
               .appName("ReadKafka using Spark session")
               .getOrCreate()
 
-  val df = spark
+  spark.sparkContext.setLogLevel("WARN")
+
+
+  val schema = StructType(Seq(
+    StructField("TIMESTAMP", StringType),
+    StructField("key", StringType),
+    StructField("val", LongType )
+  ))
+
+
+  val json_df = spark
   .readStream
   .format("kafka")
   .option("kafka.bootstrap.servers", "ip-172-31-38-146.ec2.internal:6667")
   .option("subscribe", "walmart_topic")
     .option("startingOffsets", "latest")
-    .load() //test
+    .load()
+    .select(from_json(col("value").cast("string"), schema))
 
-  spark.sparkContext.setLogLevel("WARN")
 
-  val df1 = df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+
+  val df1 = json_df.groupBy("key").agg(count("val").as("count"),
+    current_timestamp().as("TIMESTAMP"),
+    sum("val").as("sum"),
+    collect_list("TIMESTAMP").as("ts"),
+    col("key"),
+    collect_list("val").as("vals"),
+    mean("val").as("mean")).orderBy("key")
 
   val query = df1.writeStream
     .outputMode("append")
