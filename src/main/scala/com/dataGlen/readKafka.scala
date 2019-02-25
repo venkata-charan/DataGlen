@@ -3,6 +3,7 @@ package com.dataGlen
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types.{LongType, StringType, StructField, StructType}
 import org.apache.spark.sql.functions._
+import org.apache.spark.sql.functions.struct
 
 object  readKafka extends  App{
 
@@ -41,7 +42,9 @@ object  readKafka extends  App{
     mean("val").as("mean")).orderBy("key")
 
   val query = df1
-    .select("key" , df1.toJSON.toString())
+    .select("key" ,
+      to_json(struct("count",
+        "sum","ts","key","vals","mean")).toString())
     .writeStream
     .outputMode("complete")
     .format("console")
