@@ -40,7 +40,9 @@ object  readKafka extends  App{
    collect_list( col("val")).as("vals"),
     mean("val").as("mean")).orderBy("key")
 
-  val query = df1.toJSON.writeStream
+  val query = df1
+    .select("key" , df1.toJSON.toString())
+    .writeStream
     .outputMode("complete")
     .format("console")
     .start()
