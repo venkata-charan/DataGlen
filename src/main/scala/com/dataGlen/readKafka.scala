@@ -54,6 +54,7 @@ object  readKafka extends  App{
     .format("kafka")
     .option("kafka.bootstrap.servers", "ip-172-31-38-146.ec2.internal:6667")
     .option("subscribe", "test_aggregated")
+    .option("checkpointLocation", "hdfs:///user/charanrajlv3971/checkpoint/")
     .outputMode("complete")
     .start()
 
