@@ -34,11 +34,10 @@ object  readKafka extends  App{
 
   val json_df2 = json_df.selectExpr("value.key","value.val","value.TIMESTAMP","kafkatime") //test
 
-  val df1 = json_df2.groupBy(col("key"))
-    //window(col("kafkatime"),
-     // "2 minutes","30 seconds"))
+  val df1 = json_df2.groupBy(col("key"),
+    window(col("kafkatime"), "2 minutes"))
     .agg(count("val").as("count"),
-      first("TIMESTAMP"),
+      first("TIMESTAMP").as("TIMESTAMP"),
       sum("val").as("sum"),
       collect_list(col("TIMESTAMP")).as("ts"),
       col("key"),
