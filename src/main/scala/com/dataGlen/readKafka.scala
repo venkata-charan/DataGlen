@@ -14,7 +14,6 @@ object  readKafka extends  App{
 
   spark.sparkContext.setLogLevel("WARN")
 
-
   val schema = StructType(Seq(
     StructField("TIMESTAMP", StringType),
     StructField("key", StringType),
@@ -51,11 +50,13 @@ object  readKafka extends  App{
     .select(col("key").as("Key")
       ,to_json(struct(df1.columns.head,df1.columns.tail:_*)).
         cast("String").as("Value"))
-    .filter("Key is not null")
     .writeStream
+    .format("kafka")
+    .option("kafka.bootstrap.servers", "ip-172-31-38-146.ec2.internal:6667")
+    .option("subscribe", "test_aggregated")
     .outputMode("complete")
-    .format("console")
     .start()
-    .awaitTermination()
+
+    query.awaitTermination()
 
 }
