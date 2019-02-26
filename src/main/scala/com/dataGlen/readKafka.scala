@@ -45,13 +45,13 @@ object  readKafka extends  App{
       col("key"),
       collect_list( col("val")).as("vals"),
       mean("val").as("mean"))
-    .filter("key is not null")
     .orderBy("key")
 
   val query = df1
     .select(col("key").as("Key")
       ,to_json(struct(df1.columns.head,df1.columns.tail:_*)).
         cast("String").as("Value"))
+    .filter("Key is not null")
     .writeStream
     .outputMode("complete")
     .format("console")
