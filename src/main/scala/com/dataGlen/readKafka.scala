@@ -44,7 +44,9 @@ object  readKafka extends  App{
       collect_list(col("TIMESTAMP")).as("ts"),
       col("key"),
       collect_list( col("val")).as("vals"),
-      mean("val").as("mean")).orderBy("key")
+      mean("val").as("mean"))
+    .filter("key is not null")
+    .orderBy("key")
 
   val query = df1
     .select(col("key").as("Key")
@@ -54,7 +56,6 @@ object  readKafka extends  App{
     .outputMode("complete")
     .format("console")
     .start()
-
-  query.awaitTermination()
+    .awaitTermination()
 
 }
