@@ -14,6 +14,7 @@ object  readKafka extends  App{
 
   spark.sparkContext.setLogLevel("WARN")
 
+
   val schema = StructType(Seq(
     StructField("TIMESTAMP", StringType),
     StructField("key", StringType),
@@ -31,8 +32,7 @@ object  readKafka extends  App{
     .select(from_json(col("value").cast("string"), schema)
       .as("value"),col("timestamp").as("kafkatime"))
 
-  val json_df2 = json_df.selectExpr("value.key","value.val",
-    "value.TIMESTAMP","kafkatime") //test
+  val json_df2 = json_df.selectExpr("value.key","value.val","value.TIMESTAMP","kafkatime") //test
 
   val df1 = json_df2.groupBy(col("key"),
     window(col("kafkatime"),
@@ -43,21 +43,17 @@ object  readKafka extends  App{
       collect_list(col("TIMESTAMP")).as("ts"),
       col("key"),
       collect_list( col("val")).as("vals"),
-      mean("val").as("mean"))
-    .orderBy("key")
+      mean("val").as("mean")).orderBy("key")
 
   val query = df1
-    .select(col("key")
+    .select(col("key").as("Key")
       ,to_json(struct(df1.columns.head,df1.columns.tail:_*)).
-        cast("String").as("value"))
+        cast("String").as("Value"))
     .writeStream
-    .format("kafka")
-    .option("kafka.bootstrap.servers", "ip-172-31-38-146.ec2.internal:6667")
-    .option("topic", "test_aggregated")
-    .option("checkpointLocation", "hdfs:///user/charanrajlv3971/checkpoint/")
     .outputMode("complete")
+    .format("console")
     .start()
 
-    query.awaitTermination()
+  query.awaitTermination()
 
 }
