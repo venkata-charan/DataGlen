@@ -23,19 +23,20 @@ object KafkaProducer extends App {
 
   val myProducer = new KafkaProducer[String, String](props)
 
-  myProducer.initTransactions()
+  //myProducer.initTransactions()
 
   try {
-    myProducer.beginTransaction()
+    //myProducer.beginTransaction()
     while(true)
      {
+       println("trying to send messages")
        val in_key = "key"+ rnd.nextInt(5)
        val in_value = rnd.nextInt(1000)
        val in_time = LocalDateTime.now().toString
        val msg = "{\"TIMESTAMP\": \"" + in_time + "\", \"val\": "+ in_value+", \"key\": \""+in_key+"\"}"
        val data = new ProducerRecord[String, String](topic, brokerip , msg)
        myProducer.send(data)
-       myProducer.commitTransaction()
+      // myProducer.commitTransaction()
        Thread.sleep(5000)
     }
 
