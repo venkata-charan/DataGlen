@@ -47,9 +47,9 @@ object  readKafka extends  App{
     .orderBy("key")
 
   val query = df1
-    .select(col("key").as("Key")
+    .select(col("key")
       ,to_json(struct(df1.columns.head,df1.columns.tail:_*)).
-        cast("String").as("Value"))
+        cast("String").as("value"))
     .writeStream
     .format("kafka")
     .option("kafka.bootstrap.servers", "ip-172-31-38-146.ec2.internal:6667")
