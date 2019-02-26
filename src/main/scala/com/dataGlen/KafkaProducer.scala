@@ -19,9 +19,9 @@ object KafkaProducer extends App {
   props.put("bootstrap.servers", brokerip)
   //props.put("transactional.id", "my-transactional-id")
   props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
-  props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
+  props.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer")
 
-  val myProducer = new KafkaProducer[String, String](props)
+  val myProducer = new KafkaProducer[String,Array[Byte]](props)
 
   //myProducer.initTransactions()
 
@@ -34,7 +34,7 @@ object KafkaProducer extends App {
        val in_value = rnd.nextInt(1000)
        val in_time = LocalDateTime.now().toString
        val msg = "{\"TIMESTAMP\": \"" + in_time + "\", \"val\": "+ in_value+", \"key\": \""+in_key+"\"}"
-       val data = new ProducerRecord[String, String](topic, brokerip , msg)
+       val data = new ProducerRecord[String, Array[Byte]](topic, brokerip , msg.getBytes)
        myProducer.send(data)
       // myProducer.commitTransaction()
        Thread.sleep(5000)
