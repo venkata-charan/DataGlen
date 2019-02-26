@@ -29,18 +29,22 @@ object  readKafka extends  App{
   .option("subscribe", "walmart_topic")
     .option("startingOffsets", "latest")
     .load()
-    .select(from_json(col("value").cast("string"), schema).as("value"))
+    .select(from_json(col("value").cast("string"), schema)
+      .as("value"),col("timestamp").as("kafkatime"))
 
-  val json_df2 = json_df.selectExpr("value.key","value.val","value.TIMESTAMP") //test
+  val json_df2 = json_df.selectExpr("value.key","value.val",
+    "value.TIMESTAMP","kafkatime") //test
 
-  val df1 = json_df2.groupBy("key")
+  val df1 = json_df2.groupBy(col("key"),
+    window(col("kafkatime"),
+      "2 minutes","30 seconds"))
     .agg(count("val").as("count"),
       first("TIMESTAMP"),
-    sum("val").as("sum"),
-   collect_list(col("TIMESTAMP")).as("ts"),
-   col("key"),
-   collect_list( col("val")).as("vals"),
-    mean("val").as("mean")).orderBy("key")
+      sum("val").as("sum"),
+      collect_list(col("TIMESTAMP")).as("ts"),
+      col("key"),
+      collect_list( col("val")).as("vals"),
+      mean("val").as("mean")).orderBy("key")
 
   val query = df1
     .select(col("key").as("Key")
