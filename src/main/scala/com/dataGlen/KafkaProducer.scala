@@ -17,7 +17,7 @@ object KafkaProducer extends App {
   }
 
   val inp_topic = args(0)
-  val bootstrapIp = args(2)
+  val bootstrapIp = args(1)
 
 
   //Build spark session for streaming
